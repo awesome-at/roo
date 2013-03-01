@@ -12,7 +12,8 @@ class Roo::Excel2003XML < Roo::GenericSpreadsheet
       filename = open_from_uri(filename, tmpdir) if uri?(filename)
       filename = unzip(filename, tmpdir) if packed == :zip
 
-      file_type_check(filename,'.xml','an Excel 2003 XML', file_warning)
+      # TODO: xls is also quite ok (at least for excel himself)
+      # file_type_check(filename,'.xml','an Excel 2003 XML', file_warning)
       @cells_read = Hash.new
       @filename = filename
       unless File.file?(@filename)
@@ -118,7 +119,7 @@ class Roo::Excel2003XML < Roo::GenericSpreadsheet
 
   def sheets
     @doc.xpath("/ss:Workbook/ss:Worksheet").map do |sheet|
-      sheet['Name']
+      sheet['ss:Name']
     end
   end
 
@@ -229,7 +230,7 @@ class Roo::Excel2003XML < Roo::GenericSpreadsheet
           end
           c.xpath('./ss:Data').each do |cell|
             formula = cell['Formula']
-            value_type = cell['Type'].downcase.to_sym
+            value_type = cell['ss:Type'].downcase.to_sym
             v =  cell.content
             str_v = v
             case value_type
