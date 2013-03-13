@@ -231,7 +231,7 @@ class Roo::Excel2003XML < Roo::GenericSpreadsheet
           c.xpath('./ss:Data').each do |cell|
             formula = cell['Formula']
             value_type = cell['ss:Type'].downcase.to_sym
-            v =  cell.content
+            v =  cell.content || ''
             str_v = v
             case value_type
             when :number
