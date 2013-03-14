@@ -214,22 +214,22 @@ class Roo::Excel2003XML < Roo::GenericSpreadsheet
       column_attributes = {}
       idx = 0
       ws.xpath('./ss:Table/ss:Column').each do |c|
-        column_attributes[(idx += 1).to_s] = c['StyleID']
+        column_attributes[(idx += 1).to_s] = c['ss:StyleID']
       end
       ws.xpath('./ss:Table/ss:Row').each do |r|
-        skip_to_row = r['Index'].to_i
+        skip_to_row = r['ss:Index'].to_i
         row = skip_to_row if skip_to_row > 0
-        style_name = r['StyleID'] if r['StyleID']
+        style_name = r['ss:StyleID'] if r['ss:StyleID']
         r.xpath('./ss:Cell').each do |c|
-          skip_to_col = c['Index'].to_i
+          skip_to_col = c['ss:Index'].to_i
           col = skip_to_col if skip_to_col > 0
-          if c['StyleID']
-            style_name = c['StyleID']
+          if c['ss:StyleID']
+            style_name = c['ss:StyleID']
           elsif
-            style_name ||= column_attributes[c['Index']]
+            style_name ||= column_attributes[c['ss:Index']]
           end
           c.xpath('./ss:Data').each do |cell|
-            formula = cell['Formula']
+            formula = cell['ss:Formula']
             value_type = cell['ss:Type'].downcase.to_sym
             v =  cell.content || ''
             str_v = v
@@ -246,7 +246,7 @@ class Roo::Excel2003XML < Roo::GenericSpreadsheet
                 value_type = :date
               end
             when :boolean
-              v = cell['boolean-value']
+              v = cell['ss:boolean-value']
             end
             set_cell_values(sheet,col,row,0,v,value_type,formula,cell,str_v,style_name)
           end
@@ -264,12 +264,12 @@ class Roo::Excel2003XML < Roo::GenericSpreadsheet
 
   def read_styles
     @doc.xpath("/ss:Workbook/ss:Styles/ss:Style").each do |style|
-      style_id = style['ID']
+      style_id = style['ss:ID']
       @style_definitions[style_id] = Roo::Excel2003XML::Font.new
       if font = style.at_xpath('./ss:Font')
-        @style_definitions[style_id].bold = font['Bold']
-        @style_definitions[style_id].italic = font['Italic']
-        @style_definitions[style_id].underline = font['Underline']
+        @style_definitions[style_id].bold = font['ss:Bold']
+        @style_definitions[style_id].italic = font['ss:Italic']
+        @style_definitions[style_id].underline = font['ss:Underline']
       end
     end
   end
